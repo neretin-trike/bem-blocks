@@ -152,13 +152,6 @@ function parseForTree(name){
 
 	var blockObjects = [];
 
-	// for (var i = 0; i < name.length; i++){
-	// 	var item = name[i];
-
-	// 	if ( (item=='(')||(item==')')||(item=='>')||(item=='+')||(item=='^') )
-	// 		symbArr.push(item)
-	// }
-
 	blockArr.forEach(function(item, i) {
 
 		var index = name.search(item)-1;
@@ -167,6 +160,15 @@ function parseForTree(name){
 			index--;
 		}
 		
+		if(index>0){
+			for (var j = index; j>0; j--){
+				if (name[j]==')'){
+					level = level - 1;
+					break;
+				}
+			}
+		}
+
 		switch (name[index]) {
 			case '>':
 			  level = level + 1;
@@ -186,7 +188,6 @@ function parseForTree(name){
 		}
 
 	});
-
 
 	var c = 0;
 }
