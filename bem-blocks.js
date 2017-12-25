@@ -142,9 +142,12 @@ function splitForDescendants(remain,bro){
 
 
 function parseForTree(name){
-	var regex = /[\)\+]*[\+][\(]|[\)][\+]|[\)]|[\(]|[\>]|[\+]/;
+	var regex = /[\)\+]*[\+][\(]|[\)][\+]|[\)]|[\(]|[\>]|[\+]|[\^]/;
 
-	var level = 0;
+	var level = 0,
+		saveLevel = 0,
+		levelCount = 0,
+		levelSwitch = false;
 
 	var blockArr = name.split(regex);
 	
@@ -158,12 +161,35 @@ function parseForTree(name){
 
 		while(name[index]=='('){
 			index--;
+
+			symbArr.push(level);
+			levelCount++;
+
+			levelSwitch = false;
 		}
 		
 		if(index>0){
 			for (var j = index; j>0; j--){
+
 				if (name[j]==')'){
-					level = level - 1;
+
+					if (levelCount == 0){
+						level = blockObjects[i-1].level;
+
+					}
+					else{
+						var a = 0;
+
+						symbArr.slice(levelCount,1);
+
+						levelCount--;
+						level = symbArr[levelCount];
+
+					}
+
+					// levelSwitch = true;
+					
+					var c = 0;
 					break;
 				}
 			}
@@ -187,9 +213,24 @@ function parseForTree(name){
 			level: level
 		}
 
+
+	});
+
+
+	blockObjects.forEach(block => {
+		var hyphen = '';
+
+		for (var i = 0; i <= block.level; i++){
+			hyphen += '— ';
+		}
+
+		console.log('-------------');
+		console.log(hyphen+block.name);
+		
 	});
 
 	var c = 0;
+	
 }
 
 // var regex = /[\]\+]*[\+][\[]|[\]][\+]|[\]]|[\[]/ig;
@@ -206,7 +247,10 @@ function parseForTree(name){
 // parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5');
 // parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5+(b3>b31+b32)+b4+(b6>b61+(b63>b631+b632)+b62)');
 
-parseForTree('header+(main>home+about)+footer')
+// parseForTree('header+(main>home+about)+footer')
 // parseForTree('(b1+b2)+(b3+b4)')
+
+// parseForTree('header+main>home+about^footer')
+
 
 console.log(paths);
