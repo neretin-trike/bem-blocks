@@ -147,7 +147,8 @@ function parseForTree(name){
 	var level = 0,
 		saveLevel = 0,
 		levelCount = 0,
-		levelSwitch = false;
+		levelSwitch = false,
+		iterata = 0;
 
 	var blockArr = name.split(regex);
 	
@@ -162,10 +163,11 @@ function parseForTree(name){
 		while(name[index]=='('){
 			index--;
 
+			// if ((blockObjects[i-1].symb==undefined)||(blockObjects[i-1].symb=='>'))
 			symbArr.push(level);
-			levelCount++;
 
-			levelSwitch = false;
+			iterata++;
+			levelCount++;
 		}
 		
 		if(index>0){
@@ -175,20 +177,16 @@ function parseForTree(name){
 
 					if (levelCount == 0){
 						level = blockObjects[i-1].level;
-
 					}
 					else{
-						var a = 0;
-
-						symbArr.slice(levelCount,1);
-
 						levelCount--;
-						level = symbArr[levelCount];
+						
+						var a = 0;
+						level = level - 1;
 
+						// if ((symbArr[levelCount].symb==undefined)||(symbArr[levelCount].symb=='>'))
 					}
 
-					// levelSwitch = true;
-					
 					var c = 0;
 					break;
 				}
@@ -243,7 +241,7 @@ function parseForTree(name){
 // parseForTree('b1+b2+(b3>b31+b32>b321+b322)+b4');
 // parseForTree('b1+b2+(b3>b31+(b32>b321+b322)+b33)+b4');
 // parseForTree('b1+(b2>b21+b22+b23)+b8+b10+(b3>b31+b32)+(b4>b41+b42)')
-// parseForTree('b1+(b2>b21+b22+b23)+b8>b10+(b3>b31+b32)+(b4>b41+b42)')
+parseForTree('b1+(b2>b21+b22+b23)+b8>b10+(b3>b31+b32)+(b4>b41+b42)')
 // parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5');
 // parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5+(b3>b31+b32)+b4+(b6>b61+(b63>b631+b632)+b62)');
 
