@@ -3,7 +3,7 @@ var paths = [];
 
 function parseForTree(name){
 
-	var regex = /[\)\+]*[\+][\(]|[\)][\+]|[\)]|[\(]|[\>]|[\+]|[\^]/;
+	var regex = /[\)\+]*[\+][\(]|[\)][\+]|[\)]|[\(]|[\>]|[\+]|[\^]+/;
 	var level = 0;
 
 	var blockArr = name.split(regex);
@@ -39,7 +39,11 @@ function parseForTree(name){
 				level = level;
 				break;
 			case '^':
-				level = level - 1;
+				var it = index;
+				while(name[it]=='^'){
+					it--;
+					level = level - 1;
+				}
 				break;
 		}
 
@@ -53,16 +57,21 @@ function parseForTree(name){
 
 	});
 
-	blockObjects.forEach(block => {
+
+	blockObjects.forEach(function(block, i) {
 		var hyphen = '';
+		// var path = '';
 
 		for (var i = 0; i <= block.level; i++){
 			hyphen += '— ';
+
+			// path += '/'+blockObjects[i].name;
+			// paths.push(path);
+
 		}
 
 		console.log('-------------');
 		console.log(hyphen+block.name);
-		
 	});
 	
 }
@@ -85,6 +94,6 @@ function parseForTree(name){
 // parseForTree('header+(main>home+about)+footer')
 // parseForTree('(b1+b2)+(b3+b4)')
 
-// parseForTree('header+main>home+about>slogan^^footer')
+parseForTree('header+main>home+about>slogan^^footer')
 
 console.log(paths);
