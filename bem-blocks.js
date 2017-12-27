@@ -160,29 +160,28 @@ function parseForTree(name){
 
 		var index = name.search(item)-1;
 		var position = index;
-
-		while(name[index]=='('){
-			index--;
-
-			// if ((blockObjects[i-1].symb==undefined)||(blockObjects[i-1].symb=='>'))
-			symbArr.push(level);
-
-			iterata++;
-			// levelCount++;
-		}
 		
 		if(index>0){
 			for (var j = index; j>0; j--){
 
 				if ( (name[j]==')') && ((position-j)<=3) ){
 
-					level = symbArr[levelCount];
-					levelCount++;
+					level = symbArr[symbArr.length-1];
+					symbArr.splice(symbArr.length-1,1)
+					// levelCount++;
 					
 					var c = 0;
 					break;
 				}
 			}
+		}
+
+		while(name[index]=='('){
+			index--;
+
+			symbArr.push(level);
+			// iterata++;
+			// levelCount++;
 		}
 
 		switch (name[index]) {
@@ -232,7 +231,7 @@ function parseForTree(name){
 // parseForTree('b1>b2>b3>b4+b5+b6')
 // parseForTree('b1>b2+b3>b4+b5>b6+b7>b8+b9')
 // parseForTree('b1+b2+(b3>b31+b32>b321+b322)+b4');
-parseForTree('b1+b2+(b3>b31+(b32>b321+b322)+b33)+b4');
+// parseForTree('b1+b2+(b3>b31+(b32>b321+b322)+b33)+b4');
 // parseForTree('b1+(b2>b21+b22+b23)+b8+b10+(b3>b31+b32)+(b4>b41+b42)')
 // parseForTree('b1+(b2>b21+b22+b23)+b8>b10+(b3>b31+b32)+(b4>b41+b42)')
 // parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5');
