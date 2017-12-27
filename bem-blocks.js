@@ -159,6 +159,7 @@ function parseForTree(name){
 	blockArr.forEach(function(item, i) {
 
 		var index = name.search(item)-1;
+		var position = index;
 
 		while(name[index]=='('){
 			index--;
@@ -167,26 +168,17 @@ function parseForTree(name){
 			symbArr.push(level);
 
 			iterata++;
-			levelCount++;
+			// levelCount++;
 		}
 		
 		if(index>0){
 			for (var j = index; j>0; j--){
 
-				if (name[j]==')'){
+				if ( (name[j]==')') && ((position-j)<=3) ){
 
-					if (levelCount == 0){
-						level = blockObjects[i-1].level;
-					}
-					else{
-						levelCount--;
-						
-						var a = 0;
-						level = level - 1;
-
-						// if ((symbArr[levelCount].symb==undefined)||(symbArr[levelCount].symb=='>'))
-					}
-
+					level = symbArr[levelCount];
+					levelCount++;
+					
 					var c = 0;
 					break;
 				}
@@ -208,7 +200,8 @@ function parseForTree(name){
 		blockObjects[i] = {
 			name: item,
 			symb: name[index],
-			level: level
+			level: level,
+			pos: position
 		}
 
 
@@ -239,9 +232,9 @@ function parseForTree(name){
 // parseForTree('b1>b2>b3>b4+b5+b6')
 // parseForTree('b1>b2+b3>b4+b5>b6+b7>b8+b9')
 // parseForTree('b1+b2+(b3>b31+b32>b321+b322)+b4');
-// parseForTree('b1+b2+(b3>b31+(b32>b321+b322)+b33)+b4');
+parseForTree('b1+b2+(b3>b31+(b32>b321+b322)+b33)+b4');
 // parseForTree('b1+(b2>b21+b22+b23)+b8+b10+(b3>b31+b32)+(b4>b41+b42)')
-parseForTree('b1+(b2>b21+b22+b23)+b8>b10+(b3>b31+b32)+(b4>b41+b42)')
+// parseForTree('b1+(b2>b21+b22+b23)+b8>b10+(b3>b31+b32)+(b4>b41+b42)')
 // parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5');
 // parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5+(b3>b31+b32)+b4+(b6>b61+(b63>b631+b632)+b62)');
 
