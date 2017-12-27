@@ -63,19 +63,26 @@ function parseForTree(name){
 		var hyphen = '';
 		var path = '';
 
-		for (var i = index; i<blockObjects.length ; i++){
+		var current = index;
+
+		for (var i = 1; i<=current; i++){
 			hyphen += '— ';
 			
 			var c = 0;
 
-			if (index!=0){
-				if ( (blockObjects[index-1].level==blockObjects[index].level) 
-					 || (blockObjects[index-1].level>blockObjects[index].level) )
-					 {
-						 var b = 0;
+			var bO = blockObjects[current].level;
+			var bO_i = blockObjects[current-i].level;
+
+			if (current!=0){
+				if ( (bO == bO_i) || (bO < bO_i)){
+						path =  path + '/' + blockObjects[current].name;
+						// break;
 					 }
-				else{
-					path = path + '/' + blockObjects[i].name;
+				if (bO > bO_i) {
+					path = path + '/' + blockObjects[current].name;
+					current--;
+					i = 0;
+					// break;
 				}
 			}
 
@@ -107,8 +114,8 @@ function parseForTree(name){
 // parseForTree('header+(main>home+about)+footer')
 // parseForTree('(b1+b2)+(b3+b4)')
 
-// parseForTree('header+main>home+about>slogan^^footer')
-parseForTree('header+main>home+about^footer')
+parseForTree('header+main>home+about>slogan^^footer')
+// parseForTree('header+main>home+about^footer')
 
 
 console.log(paths);
