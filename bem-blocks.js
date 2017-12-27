@@ -57,19 +57,32 @@ function parseForTree(name){
 
 	});
 
+	var roots = '';
 
-	blockObjects.forEach(function(block, i) {
+	blockObjects.forEach(function(block, index) {
 		var hyphen = '';
-		// var path = '';
+		var path = '';
 
-		for (var i = 0; i <= block.level; i++){
+		for (var i = index; i<blockObjects.length ; i++){
 			hyphen += '— ';
+			
+			var c = 0;
 
-			// path += '/'+blockObjects[i].name;
-			// paths.push(path);
+			if (index!=0){
+				if ( (blockObjects[index-1].level==blockObjects[index].level) 
+					 || (blockObjects[index-1].level>blockObjects[index].level) )
+					 {
+						 var b = 0;
+					 }
+				else{
+					path = path + '/' + blockObjects[i].name;
+				}
+			}
 
 		}
 
+		paths.push(path);
+		
 		console.log('-------------');
 		console.log(hyphen+block.name);
 	});
@@ -94,6 +107,8 @@ function parseForTree(name){
 // parseForTree('header+(main>home+about)+footer')
 // parseForTree('(b1+b2)+(b3+b4)')
 
-parseForTree('header+main>home+about>slogan^^footer')
+// parseForTree('header+main>home+about>slogan^^footer')
+parseForTree('header+main>home+about^footer')
+
 
 console.log(paths);
