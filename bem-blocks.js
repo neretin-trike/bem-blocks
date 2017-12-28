@@ -4,29 +4,31 @@ var paths = [];
 function parseForTree(command){
 
 	var regex = /[\)\+]*[\+][\(]|[\)][\+]|[\)]|[\(]|[\>]|[\+]|[\^]+/,
-		level = 0,
 		blockArr = command.split(regex),
+		level = 0,
 		blockObjects = [],
 		levelArr = [];
 
 	blockArr.forEach(function(item, i) {
-
 		var index = command.search(item)-1,
-			saveLevel = false;
+			saveLevel = 0;
 		
 		if(index>0){
 			for (var j = index; j>0; j--){
 				if ( (command[j]==')') && ((index-j)<=3) ){
-					level = levelArr[levelArr.length-1];
-					levelArr.splice(levelArr.length-1,1)
+					while(command[j]==')'){
+						level = levelArr[levelArr.length-1];
+						levelArr.splice(levelArr.length-1,1)
+						j--;
+					}
 					break;
 				}
 			}
 		}
 
-		if(command[index]=='('){
+		while(command[index]=='('){
 			index--;
-			saveLevel = true;
+			saveLevel++;
 		}
 
 		switch (command[index]) {
@@ -45,8 +47,9 @@ function parseForTree(command){
 				break;
 		}
 
-		if (saveLevel){
+		while(saveLevel>0){
 			levelArr.push(level);
+			saveLevel--;
 		}
 
 		if (item != ""){
@@ -98,7 +101,7 @@ function parseForTree(command){
 // parseForTree('b1+(b2>b21+b22+b23)+b8+b10+(b3>b31+b32)+(b4>b41+b42)')
 // parseForTree('b1+(b2>b21+b22+b23)+b8>b10+(b3>b31+b32)+(b4>b41+b42)')
 // parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5');
-parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5+(b3>b31+b32)+b4+(b6>b61+(b63>b631+b632)+b62)');
+// parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5+(b3>b31+b32)+b4+(b6>b61+(b63>b631+b632)+b62)');
 
 // parseForTree('b2>b21+(b212>b2121+b2122)+(b6>b61+(b63>b631+b632)+b62)');
 
@@ -108,5 +111,10 @@ parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5+(b3>b31+b32)+b4+(b6>b6
 
 // parseForTree('header+main>home+about>slogan^^footer')
 // parseForTree('header+(main>(home>slogan)+about)+footer')
+
+// parseForTree('header+(main>home>slogan+about)+footer');
+// parseForTree('header+(main>(home>slogan+about))+footer');
+
+// parseForTree('header+((main>home>slogan)+about)+footer');
 
 console.log(paths);
