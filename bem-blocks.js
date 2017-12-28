@@ -1,15 +1,19 @@
 
 var paths = [];
 
+var blockObjects = [];
+var addBlockObject = function(name,item,level){
+    var block = {name:name, item:item, level:level};
+    blockObjects.push(block);
+};
+
 function parseForTree(name){
 
 	var regex = /[\)\+]*[\+][\(]|[\)][\+]|[\)]|[\(]|[\>]|[\+]|[\^]+/;
 	var level = 0;
 
 	var blockArr = name.split(regex);
-
-	var blockObjects = [],
-		levelArr = [];
+	var levelArr = [];
 
 	blockArr.forEach(function(item, i) {
 
@@ -26,9 +30,10 @@ function parseForTree(name){
 			}
 		}
 
+		var check = true;
 		while(name[index]=='('){
 			index--;
-			levelArr.push(level);
+			check = false;
 		}
 
 		switch (name[index]) {
@@ -47,12 +52,17 @@ function parseForTree(name){
 				break;
 		}
 
+		if (!check){
+			levelArr.push(level);
+		}
+
 		if (item != ""){
-			blockObjects[i] = {
-				name: item,
-				symb: name[index],
-				level: level
-			}
+			addBlockObject(item, name[index],level);
+			// blockObjects.push(function () {
+			// 	name: item,
+			// 	symb: name[index],
+			// 	level: level
+			// });
 		}
 
 	});
@@ -61,31 +71,29 @@ function parseForTree(name){
 
 	blockObjects.forEach(function(block, index) {
 		var hyphen = '';
-		var path = '';
+		var path = block.name;
 
 		var current = index;
 
-		for (var i = 1; i<=current; i++){
-			hyphen += '— ';
-			
-			var c = 0;
+		var c = block.level;
 
+		for (var j = 0; j<block.level;j++){
+			hyphen += '— ';
+		}
+		
+		for (var i = 1; i<=current; i++){
+			
+			var name = '';
 			var bO = blockObjects[current].level;
 			var bO_i = blockObjects[current-i].level;
 
-			if (current!=0){
-				if ( (bO == bO_i) || (bO < bO_i)){
-						path =  path + '/' + blockObjects[current].name;
-						// break;
-					 }
-				if (bO > bO_i) {
-					path = path + '/' + blockObjects[current].name;
-					current--;
-					i = 0;
-					// break;
-				}
-			}
 
+			if ((bO > bO_i)&&((bO_i != c))) {
+				name = blockObjects[current-i].name;
+				path = name + '/' + path;
+				c--;
+			}
+			
 		}
 
 		paths.push(path);
@@ -114,8 +122,8 @@ function parseForTree(name){
 // parseForTree('header+(main>home+about)+footer')
 // parseForTree('(b1+b2)+(b3+b4)')
 
-parseForTree('header+main>home+about>slogan^^footer')
-// parseForTree('header+main>home+about^footer')
+// parseForTree('header+main>home+about>slogan^^footer')
+parseForTree('header+(main>(home>slogan)+about)+footer')
 
 
 console.log(paths);
