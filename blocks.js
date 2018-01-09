@@ -264,8 +264,16 @@ console.log(paths);
 // If the user pass the name of the block in the command-line options
 // that create a block. Otherwise - activates interactive mode
 if (blockNameFromCli !== '') {
-	createAnotherFiles()
-	// initMakeBlock(blockNameFromCli).catch(printErrorMessage);
+	rl.setPrompt('Are you sure? (y/n): '.magenta);
+	rl.prompt();
+	rl.on('line', (line) => {
+		if (line=='y'){
+			createAnotherFiles();
+		}
+		else{
+			rl.close();
+		}
+	});
 } 
 else {
 	rl.setPrompt('Block name: '.magenta);
