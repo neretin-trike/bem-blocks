@@ -139,93 +139,114 @@ const blockNameFromCli = process.argv
 		.join(' ');
 
 var paths = [];
+var parseAchieved = false;
+
+function structureСheck(command){
+	var regex = /(\+|\>)\1{1,}|\)\(|\(\)|\+\>|\>\+|\^\+|\+\^|\>\^|\^\>|\)\>|\)\^/,
+		result = command.match(regex);
+
+	if (result!=null){
+		return false;
+	}
+	else{
+		return true;
+	}
+}
 
 function parseForTree(command){
 
-	var regex = /[\)\+]*[\+][\(]|[\)][\+]|[\)]|[\(]|[\>]|[\+]|[\^]+/,
-		blockArr = command.split(regex),
-		level = 0,
-		blockObjects = [],
-		levelArr = [];
+	var correct = structureСheck(command);
 
-	blockArr.forEach(function(item, i) {
-		var index = command.search(item)-1,
-			saveLevel = 0;
-		
-		if(index>0){
-			for (var j = index; j>0; j--){
-				if ( (command[j]==')') && ((index-j)<=3) ){
-					while(command[j]==')'){
-						level = levelArr[levelArr.length-1];
-						levelArr.splice(levelArr.length-1,1)
-						j--;
+	if (correct){
+		var regex = /[\)\+]*[\+][\(]|[\)][\+]|[\)]|[\(]|[\>]|[\+]|[\^]+/,
+			blockArr = command.split(regex),
+			level = 0,
+			blockObjects = [],
+			levelArr = [];
+	
+		blockArr.forEach(function(item, i) {
+			var index = command.search(item)-1,
+				saveLevel = 0;
+			
+			if(index>0){
+				for (var j = index; j>0; j--){
+					if ( (command[j]==')') && ((index-j)<=3) ){
+						while(command[j]==')'){
+							level = levelArr[levelArr.length-1];
+							levelArr.splice(levelArr.length-1,1)
+							j--;
+						}
+						break;
+					}
+				}
+			}
+	
+			while(command[index]=='('){
+				index--;
+				saveLevel++;
+			}
+	
+			switch (command[index]) {
+				case '>':
+					level = level + 1;
+					break;
+				case '+':
+					level = level;
+					break;
+				case '^':
+					var it = index;
+					while(command[it]=='^'){
+						it--;
+						level = level - 1;
 					}
 					break;
-				}
 			}
-		}
-
-		while(command[index]=='('){
-			index--;
-			saveLevel++;
-		}
-
-		switch (command[index]) {
-			case '>':
-				level = level + 1;
-				break;
-			case '+':
-				level = level;
-				break;
-			case '^':
-				var it = index;
-				while(command[it]=='^'){
-					it--;
-					level = level - 1;
-				}
-				break;
-		}
-
-		while(saveLevel>0){
-			levelArr.push(level);
-			saveLevel--;
-		}
-
-		if (item != ""){
-			var block = {name:item, symb:command[index], level:level};
-			blockObjects.push(block);
-		}
-
-	});
-
-	blockObjects.forEach(function(block, index) {
-		var hyphen = '',
-			path = block.name,
-			layer = block.level;
-
-		for (var j = 0; j<block.level;j++){
-			hyphen += '— ';
-		}
-		
-		for (var i = 1; i<=index; i++){
-			
-			var name = '';
-			var bO = blockObjects[index].level;
-			var bO_i = blockObjects[index-i].level;
-
-			if ( (bO > bO_i) && (bO_i < layer) ) {
-				name = blockObjects[index-i].name;
-				path = name + '/' + path;
-				layer--;
-			}
-		}
-
-		paths.push(path);
-		
-		console.log('-------------');
-		console.log(hyphen+block.name);
-	});
 	
+			while(saveLevel>0){
+				levelArr.push(level);
+				saveLevel--;
+			}
+	
+			if (item != ""){
+				var block = {name:item, symb:command[index], level:level};
+				blockObjects.push(block);
+			}
+	
+		});
+	
+		blockObjects.forEach(function(block, index) {
+			var hyphen = '',
+				path = block.name,
+				layer = block.level;
+	
+			for (var j = 0; j<block.level;j++){
+				hyphen += '— ';
+			}
+			
+			for (var i = 1; i<=index; i++){
+				
+				var name = '';
+				var bO = blockObjects[index].level;
+				var bO_i = blockObjects[index-i].level;
+	
+				if ( (bO > bO_i) && (bO_i < layer) ) {
+					name = blockObjects[index-i].name;
+					path = name + '/' + path;
+					layer--;
+				}
+			}
+	
+			paths.push(path);
+			
+			console.log('-------------');
+			console.log(hyphen+block.name);
+		});
+
+		parseAchieved = true;
+	}
+	else{
+		console.log('ERR>>> Incorrect structure'.red);
+	}
 }
 
 // var regex = /[\]\+]*[\+][\[]|[\]][\+]|[\]]|[\[]/ig;
@@ -240,7 +261,7 @@ function parseForTree(command){
 // parseForTree('b1+(b2>b21+b22+b23)+b8+b10+(b3>b31+b32)+(b4>b41+b42)')
 // parseForTree('b1+(b2>b21+b22+b23)+b8>b10+(b3>b31+b32)+(b4>b41+b42)')
 // parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5');
-parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5+(b3>b31+b32)+b4+(b6>b61+(b63>b631+b632)+b62)');
+// parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5+(b3>b31+b32)+b4+(b6>b61+(b63>b631+b632)+b62)');
 
 // parseForTree('b2>b21+(b212>b2121+b2122)+(b6>b61+(b63>b631+b632)+b62)');
 
@@ -256,14 +277,19 @@ parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5+(b3>b31+b32)+b4+(b6>b6
 
 // parseForTree('header>+main')
 
-// parseForTree('header+((main>home>slogan)+about)+footer');
+parseForTree('header+((main>home>slogan)+about)+footer');
+
+// parseForTree('b1>b12^(b2+b3)');
+
+// parseForTree('(main>home+about)>heade^eer+++++footer>+aasd^^^^^asdasd?>>>>asd+(asdasd+>asda(asdasd)asd()asdasd)^asd)(as')
 
 // parseForTree(blockNameFromCli);
+
 console.log(paths);
 
 // If the user pass the name of the block in the command-line options
 // that create a block. Otherwise - activates interactive mode
-if (blockNameFromCli !== '') {
+if (parseAchieved == true) {
 	rl.setPrompt('Are you sure? (y/n): '.magenta);
 	rl.prompt();
 	rl.on('line', (line) => {
@@ -275,14 +301,6 @@ if (blockNameFromCli !== '') {
 		}
 	});
 } 
-else {
-	rl.setPrompt('Block name: '.magenta);
-	rl.prompt();
-	rl.on('line', (line) => {
-		const blockName = line.trim();
-		initMakeBlock(blockName).catch(printErrorMessage);
-	});
-}
 
 function createAnotherFiles(){
 	paths.forEach(function(item, i, arr) {
