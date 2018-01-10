@@ -177,6 +177,38 @@ function hasNoDuplicates(arr, prop){
 	})
 }
 
+function createHierarchy(obj){
+	obj.forEach(function(block, index) {
+		var hyphen = '',
+			path = block.name,
+			layer = block.level;
+
+		for (var j = 0; j<block.level;j++){
+			hyphen += '— ';
+		}
+		
+		for (var i = 1; i<=index; i++){
+			
+			var name = '',
+				bO = obj[index].level,
+				bO_i = obj[index-i].level;
+
+			if ( (bO > bO_i) && (bO_i < layer) ) {
+				name = obj[index-i].name;
+				path = name + '/' + path;
+				layer--;
+			}
+		}
+
+		paths.push(path);
+		
+		console.log('-------------');
+		console.log(hyphen+block.name);
+	});
+
+	parseAchieved = true;	
+}
+
 function parseForTree(command){
 
 	if (structureСheck(command)){
@@ -237,46 +269,18 @@ function parseForTree(command){
 		});
 
 		if (hasNoDuplicates(blockObjects,'name')){
-			blockObjects.forEach(function(block, index) {
-				var hyphen = '',
-					path = block.name,
-					layer = block.level;
-		
-				for (var j = 0; j<block.level;j++){
-					hyphen += '— ';
-				}
-				
-				for (var i = 1; i<=index; i++){
-					
-					var name = '',
-						bO = blockObjects[index].level,
-						bO_i = blockObjects[index-i].level;
-		
-					if ( (bO > bO_i) && (bO_i < layer) ) {
-						name = blockObjects[index-i].name;
-						path = name + '/' + path;
-						layer--;
-					}
-				}
-		
-				paths.push(path);
-				
-				console.log('-------------');
-				console.log(hyphen+block.name);
-			});
-	
-			parseAchieved = true;			
+			createHierarchy(blockObjects);
 		}
 		else{
 			console.log('ERR>>> Blocks has duplicates'.red);
+			process.exit();
 		}
 	}
 	else{
 		console.log('ERR>>> Incorrect structure'.red);
+		process.exit();
 	}
 }
-
-// var regex = /[\]\+]*[\+][\[]|[\]][\+]|[\]]|[\[]/ig;
 
 // parseForTree('b>b1+b2>b21>b211>b2222>b33>b85+b213+b787');
 // parseForTree('b1>b3+b4+b5>b6+b21+b22+b23>b33');
@@ -310,14 +314,12 @@ function parseForTree(command){
 
 // parseForTree('(main>home+about)>heade^eer+++++footer>+aasd^^^^^asdasd?>>>>asd+(asdasd+>asda(asdasd)asd()asdasd)^asd)(as')
 
-parseForTree('asd*asd^(asd2+asd3)')
+// parseForTree('asd>asd^(asd2+asd3)')
 
 // parseForTree(blockNameFromCli);
 
 console.log(paths);
 
-// If the user pass the name of the block in the command-line options
-// that create a block. Otherwise - activates interactive mode
 if (parseAchieved == true) {
 	rl.setPrompt('Are you sure? (y/n): '.magenta);
 	rl.prompt();
