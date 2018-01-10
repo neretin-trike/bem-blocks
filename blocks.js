@@ -153,6 +153,12 @@ function structureСheck(command){
 	}
 }
 
+function hasNoDuplicates(arr, prop){
+	return arr.every(function(obj, pos){
+        return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
+	})
+}
+
 function parseForTree(command){
 
 	var correct = structureСheck(command);
@@ -213,36 +219,43 @@ function parseForTree(command){
 			}
 	
 		});
-	
-		blockObjects.forEach(function(block, index) {
-			var hyphen = '',
-				path = block.name,
-				layer = block.level;
-	
-			for (var j = 0; j<block.level;j++){
-				hyphen += '— ';
-			}
-			
-			for (var i = 1; i<=index; i++){
-				
-				var name = '';
-				var bO = blockObjects[index].level;
-				var bO_i = blockObjects[index-i].level;
-	
-				if ( (bO > bO_i) && (bO_i < layer) ) {
-					name = blockObjects[index-i].name;
-					path = name + '/' + path;
-					layer--;
-				}
-			}
-	
-			paths.push(path);
-			
-			console.log('-------------');
-			console.log(hyphen+block.name);
-		});
 
-		parseAchieved = true;
+		var noDuplicate = hasNoDuplicates(blockObjects,'name');
+	
+		if (noDuplicate){
+			blockObjects.forEach(function(block, index) {
+				var hyphen = '',
+					path = block.name,
+					layer = block.level;
+		
+				for (var j = 0; j<block.level;j++){
+					hyphen += '— ';
+				}
+				
+				for (var i = 1; i<=index; i++){
+					
+					var name = '',
+						bO = blockObjects[index].level,
+						bO_i = blockObjects[index-i].level;
+		
+					if ( (bO > bO_i) && (bO_i < layer) ) {
+						name = blockObjects[index-i].name;
+						path = name + '/' + path;
+						layer--;
+					}
+				}
+		
+				paths.push(path);
+				
+				console.log('-------------');
+				console.log(hyphen+block.name);
+			});
+	
+			parseAchieved = true;			
+		}
+		else{
+			console.log('ERR>>> Blocks has duplicates'.red);
+		}
 	}
 	else{
 		console.log('ERR>>> Incorrect structure'.red);
@@ -277,11 +290,13 @@ function parseForTree(command){
 
 // parseForTree('header>+main')
 
-parseForTree('header+((main>home>slogan)+about)+footer');
+// parseForTree('header+((main>home>slogan)+about)+footer');
 
 // parseForTree('b1>b12^(b2+b3)');
 
 // parseForTree('(main>home+about)>heade^eer+++++footer>+aasd^^^^^asdasd?>>>>asd+(asdasd+>asda(asdasd)asd()asdasd)^asd)(as')
+
+parseForTree('asd>asd^(asd2+asd3)')
 
 // parseForTree(blockNameFromCli);
 
