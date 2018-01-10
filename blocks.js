@@ -141,8 +141,8 @@ const blockNameFromCli = process.argv
 var paths = [];
 var parseAchieved = false;
 
-function structureСheck(command){
-	var regex = /(\+|\>)\1{1,}|\)\(|\(\)|\+\>|\>\+|\^\+|\+\^|\>\^|\^\>|\)\>|\)\^/,
+function commandCheck(command){
+	var regex = /(?![\(\)\+\^\>\-\_])\W/,
 		result = command.match(regex);
 
 	if (result!=null){
@@ -150,6 +150,24 @@ function structureСheck(command){
 	}
 	else{
 		return true;
+	}
+}
+
+function structureСheck(command){
+	if (commandCheck(command)){
+		var regex = /(\+|\>)\1{1,}|\)\(|\(\)|\+\>|\>\+|\^\+|\+\^|\>\^|\^\>|\)\>|\)\^/,
+		result = command.match(regex);
+
+		if (result!=null){
+			return false;
+		}
+		else{
+			return true;
+		}
+	}
+	else{
+		console.log('ERR>>> Incorrect command'.red);
+		process.exit();
 	}
 }
 
@@ -161,9 +179,7 @@ function hasNoDuplicates(arr, prop){
 
 function parseForTree(command){
 
-	var correct = structureСheck(command);
-
-	if (correct){
+	if (structureСheck(command)){
 		var regex = /[\)\+]*[\+][\(]|[\)][\+]|[\)]|[\(]|[\>]|[\+]|[\^]+/,
 			blockArr = command.split(regex),
 			level = 0,
@@ -220,9 +236,7 @@ function parseForTree(command){
 	
 		});
 
-		var noDuplicate = hasNoDuplicates(blockObjects,'name');
-	
-		if (noDuplicate){
+		if (hasNoDuplicates(blockObjects,'name')){
 			blockObjects.forEach(function(block, index) {
 				var hyphen = '',
 					path = block.name,
@@ -296,7 +310,7 @@ function parseForTree(command){
 
 // parseForTree('(main>home+about)>heade^eer+++++footer>+aasd^^^^^asdasd?>>>>asd+(asdasd+>asda(asdasd)asd()asdasd)^asd)(as')
 
-parseForTree('asd>asd^(asd2+asd3)')
+parseForTree('asd*asd^(asd2+asd3)')
 
 // parseForTree(blockNameFromCli);
 
