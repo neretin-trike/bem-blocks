@@ -1,3 +1,8 @@
+
+// COPYRIGHT: CSSSSR
+// https://github.com/CSSSR/csssr-project-template
+// Скрипт для создания нового BЕМ-блока. Разработано в CSSSR
+
 // создание блока набрать node block name
 'use strict';
 
