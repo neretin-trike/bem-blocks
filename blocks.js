@@ -23,8 +23,8 @@ var dir = BLOCKS_DIR;
 // default content for files in new block
 const fileSources = {
 	pug: `mixin {blockName}()\n\t.{blockName}\n\t\t| {blockName}\n`,
-	less: `.{blockName} \{\n\tdisplay: block;\n}`,
-	js	: `// .{blockName} scripts goes here`
+	styl: `{blockName} \t\n\tdisplay block\n`,
+	// js	: `// .{blockName} scripts goes here`
 };
 
 function validateBlockName(blockName) {
@@ -297,7 +297,7 @@ function parseForTree(command){
 // parseForTree('b1+(b2>b21+b22+b23)+b8+b10+(b3>b31+b32)+(b4>b41+b42)')
 // parseForTree('b1+(b2>b21+b22+b23)+b8>b10+(b3>b31+b32)+(b4>b41+b42)')
 // parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5');
-// parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5+(b3>b31+b32)+b4+(b6>b61+(b63>b631+b632)+b62)');
+parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5+(b3>b31+b32)+b4+(b6>b61+(b63>b631+b632)+b62)');
 
 // parseForTree('b2>b21+(b212>b2121+b2122)+(b6>b61+(b63>b631+b632)+b62)');
 
@@ -330,7 +330,9 @@ if (parseAchieved == true) {
 	rl.prompt();
 	rl.on('line', (line) => {
 		if (line=='y'){
-			createAnotherFiles();
+			// createAnotherFiles();
+			createImportFile(__dirname+'/app','../')
+			rl.close();
 		}
 		else{
 			rl.close();
@@ -347,3 +349,36 @@ function createAnotherFiles(){
 	});
 }
 
+const importPaths = {
+	pug: 'include ',
+	styl: '@import ',
+};
+
+function createImportFile(dir,prefix) {
+	const promises = [];
+	Object.keys(importPaths).forEach(ext => {
+
+		var fileSource = '';
+
+		paths.forEach(function(item) {
+			fileSource += importPaths[ext] + prefix + item + '.' + ext + '\n'
+		});
+
+		const filename = `import.${ext}`;
+		const filePath = path.join(dir, filename);
+
+		promises.push(
+				new Promise((resolve, reject) => {
+					fs.writeFile(filePath, fileSource, 'utf8', err => {
+						if (err) {
+							reject(`ERR>>> Failed to create a file '${filePath}'`.red);
+						} else {
+							resolve();
+						}
+					});
+				})
+		);
+	});
+
+	return Promise.all(promises);
+}
