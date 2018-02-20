@@ -23,7 +23,7 @@ var dir = BLOCKS_DIR;
 // default content for files in new block
 const fileSources = {
 	pug: `mixin {blockName}()\n\t.{blockName}\n\t\t| {blockName}\n`,
-	styl: `{blockName} \t\n\tdisplay block\n`,
+	styl: `.{blockName} \t\n\tdisplay block\n`,
 	// js	: `// .{blockName} scripts goes here`
 };
 
