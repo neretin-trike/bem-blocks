@@ -297,11 +297,11 @@ function parseForTree(command){
 // parseForTree('b1+(b2>b21+b22+b23)+b8+b10+(b3>b31+b32)+(b4>b41+b42)')
 // parseForTree('b1+(b2>b21+b22+b23)+b8>b10+(b3>b31+b32)+(b4>b41+b42)')
 // parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5');
-parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5+(b3>b31+b32)+b4+(b6>b61+(b63>b631+b632)+b62)');
+// parseForTree('b2>b21+(b22>b211+(b212>b2121+b2122)+b23)+b5+(b3>b31+b32)+b4+(b6>b61+(b63>b631+b632)+b62)');
 
 // parseForTree('b2>b21+(b212>b2121+b2122)+(b6>b61+(b63>b631+b632)+b62)');
 
-// parseForTree('(main>home+about)+header+footer')
+parseForTree('(main>home+about)+header+footer')
 // parseForTree('header+(main>home+about)+footer')
 // parseForTree('(b1+b2)+(b3+b4)')
 
@@ -330,7 +330,7 @@ if (parseAchieved == true) {
 	rl.prompt();
 	rl.on('line', (line) => {
 		if (line=='y'){
-			// createAnotherFiles();
+			createAnotherFiles();
 			createImportFile(__dirname+'/app','../')
 			rl.close();
 		}
@@ -374,13 +374,33 @@ function createImportFile(dir,prefix) {
 
 		promises.push(
 				new Promise((resolve, reject) => {
-					fs.writeFile(filePath, fileSource, 'utf8', err => {
-						if (err) {
-							reject(`ERR>>> Failed to create a file '${filePath}'`.red);
+
+					fs.stat(filePath, err => {
+						if(err == null) {
+
+							fs.appendFile(filePath, fileSource, 'utf8', err => {
+								if (err) {
+									reject(`ERR>>> Failed to update a file '${filePath}'`.red);
+								} else {
+									resolve();
+								}
+							});
+
+						} else if(err.code == 'ENOENT') {
+
+							fs.writeFile(filePath, fileSource, 'utf8', err => {
+								if (err) {
+									reject(`ERR>>> Failed to create a file '${filePath}'`.red);
+								} else {
+									resolve();
+								}
+							});
+							
 						} else {
-							resolve();
+							console.log('Some other error: ', err.code);
 						}
 					});
+
 				})
 		);
 	});
