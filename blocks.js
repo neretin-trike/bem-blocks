@@ -359,9 +359,14 @@ function createImportFile(dir,prefix) {
 	Object.keys(importPaths).forEach(ext => {
 
 		var fileSource = '';
+		var quote = '"';
+		if (ext === 'pug'){
+			quote = '';
+		}
 
 		paths.forEach(function(item) {
-			fileSource += importPaths[ext] + prefix + item + '.' + ext + '\n'
+			var name = item.match(/[^\/]*$/);
+			fileSource += importPaths[ext] + quote + prefix + item + '/' + name + quote + '\n'
 		});
 
 		const filename = `import.${ext}`;
